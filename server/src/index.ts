@@ -35,8 +35,13 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', time: new Date().toISOString() });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`GaragePro API Server listening on port ${PORT}`);
-});
+// Export for serverless / Vercel
+export default app;
+
+// Start server if run directly
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`GaragePro API Server listening on port ${PORT}`);
+  });
+}
 
