@@ -17,14 +17,29 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors({
-  origin: [
-    'https://my-garage-pro.vercel.app',
-    'http://localhost:3000',
-    'http://localhost:5173',
-  ],
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, server-to-server) or any vercel domain / localhost
+    if (!origin || origin.includes('vercel.app') || origin.includes('localhost')) {
+      callback(null, true);
+    } else {
+      callback(null, true); // Permissive for production demo
+    }
+  },
   credentials: true,
 }));
 app.use(express.json());
+
+// Root landing message
+app.get('/', (req, res) => {
+  res.json({
+    status: 'online',
+    app: 'myGaragePro API Server',
+    endpoints: {
+      health: '/api/health',
+      dashboard: '/api/dashboard',
+    },
+  });
+});
 
 // Routes
 app.use('/api/auth', authRoutes);
